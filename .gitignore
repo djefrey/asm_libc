@@ -1,0 +1,5 @@
+**/*.o
+**/*.c
+a.out
+libasm.so
+vgcore*
