@@ -15,7 +15,7 @@ memset_loop:
     CMP RCX, RDX
     JE memset_return
     MOV BYTE [RDI + RCX], SIL
-    ADD RCX, 1
+    INC RCX
     JMP memset_loop
 memset_return:
     MOV RAX, RDI
@@ -31,7 +31,7 @@ memcpy_loop:
     JE memcpy_return
     MOV AL, BYTE [RSI + RCX]
     MOV BYTE [RDI + RCX], AL
-    ADD RCX, 1
+    INC RCX
     JMP memcpy_loop
 memcpy_return:
     MOV RAX, RDI
@@ -48,12 +48,12 @@ memmove_clone:
     JE memmove_cpy
     MOV AL, BYTE [RSI + RCX]
     PUSH RAX
-    ADD RCX, 1
+    INC RCX
     JMP memmove_clone
 memmove_cpy:
     CMP RCX, 0
     JE memmove_return
-    SUB RCX, 1
+    DEC RCX
     POP RAX
     MOV BYTE [RDI + RCX], AL
     JMP memmove_cpy

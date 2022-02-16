@@ -6,6 +6,7 @@ GLOBAL strlen
 GLOBAL strchr
 GLOBAL strrchr
 GLOBAL strcmp
+GLOBAL strncmp
 
 ; RDI : string
 strlen:
@@ -13,7 +14,7 @@ strlen:
     CMP BYTE [RDI], 0
     JE strlen_return
 strlen_count:
-    ADD RCX, 1
+    INC RCX
     CMP BYTE [RDI + RCX], 0
     JNE strlen_count
 strlen_return:
@@ -30,7 +31,7 @@ strchr:
     CMP BYTE [RDI + RCX], 0     ; first char == \0
     JE strchr_null
 strchr_count:
-    ADD RCX, 1
+    INC RCX
     CMP BYTE [RDI + RCX], SIL   ; char == c
     JE strchr_return
     CMP BYTE [RDI + RCX], 0     ; char == \0
@@ -60,7 +61,7 @@ strrchr:
 
     MOV RCX, RAX
 strrchr_count:
-    SUB RCX, 1
+    DEC RCX
     CMP BYTE [RDI + RCX], SIL   ; char == c
     JE strrchr_return
     CMP BYTE [RDI + RCX], 0     ; char == \0
@@ -79,19 +80,39 @@ strrchr_return:
 ; RDI : s1
 ; RSI : s2
 strcmp:
-    XOR RAX, RAX
-    XOR RBX, RBX
-    XOR RCX, RCX
-strcmp_loop:
-    MOV AL, BYTE [RDI + RCX]
-    MOV BL, BYTE [RSI + RCX]
-    ADD RCX, 1
-    CMP AL, 0
+    MOV R10B, BYTE [RDI]
+    MOV R11B, BYTE [RSI]
+    CMP R10B, R11B
+    JNE strcmp_return
+    CMP R10B, 0
     JE strcmp_return
-    CMP BL, 0
-    JE strcmp_return
-    CMP AL, BL
-    JE strcmp_loop
+    INC RDI
+    INC RSI
+    JMP strcmp
 strcmp_return:
+    MOVZX RAX, R10B
+    MOVZX RBX, R11B
+    SUB RAX, RBX
+    RET
+
+; RDI : s1
+; RSI : s2
+; RDX : n
+strncmp:
+    XOR RCX, RCX
+strncmp_loop:
+    CMP RCX, RDX
+    JE strncmp_return
+    MOV R10B, BYTE [RDI + RCX]
+    MOV R11B, BYTE [RSI + RCX]
+    CMP R10B, R11B
+    JNE strcmp_return
+    CMP R10B, 0
+    JE strcmp_return
+    INC RCX
+    JMP strncmp_loop
+strncmp_return:
+    MOVZX RAX, R10B
+    MOVZX RBX, R11B
     SUB RAX, RBX
     RET
