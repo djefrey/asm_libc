@@ -5,7 +5,8 @@
 ## Makefile
 ##
 
-SRC				=	src/string.asm			\
+SRC				=	src/start.asm			\
+					src/string.asm			\
 					src/memory.asm
 
 OBJ				=	$(SRC:%.asm=%.o)
