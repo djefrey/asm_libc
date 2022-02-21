@@ -8,6 +8,7 @@ GLOBAL strrchr
 GLOBAL strcmp
 GLOBAL strncmp
 GLOBAL strcasecmp
+GLOBAL strstr
 
 ; RDI : string
 strlen:
@@ -152,4 +153,41 @@ strcasecmp_return:
     MOVZX RAX, R10B
     MOVZX RBX, R11B
     SUB RAX, RBX
+    RET
+
+; RDI : haystack
+; RSI : needle (to find)
+strstr:
+    MOV R9, RDI
+
+strstr_loop:
+    CMP BYTE [RDI], 0
+    JE strstr_no_match
+
+strstr_find_match:
+    XOR RCX, RCX
+
+strstr_find_match_loop:
+    MOV R10B, [RDI + RCX]
+    MOV R11B, [RSI + RCX]
+    INC RCX
+
+    CMP R11B, 0
+    JE strstr_match
+    CMP R10B, 0
+    JE strstr_end_loop
+    CMP R10B, R11B
+    JE strstr_find_match_loop
+    JMP strstr_end_loop
+
+strstr_end_loop:
+    INC RDI
+    JMP strstr_loop
+
+strstr_no_match:
+    MOV RAX, R9
+    RET
+
+strstr_match:
+    MOV RAX, RDI
     RET
