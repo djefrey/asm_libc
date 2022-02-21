@@ -7,6 +7,7 @@ GLOBAL strchr
 GLOBAL strrchr
 GLOBAL strcmp
 GLOBAL strncmp
+GLOBAL strcasecmp
 
 ; RDI : string
 strlen:
@@ -88,7 +89,7 @@ strcmp:
     JE strcmp_return
     INC RDI
     INC RSI
-    JMP strcmp
+    JMP my_strcmp
 strcmp_return:
     MOVZX RAX, R10B
     MOVZX RBX, R11B
@@ -115,4 +116,45 @@ strncmp_return:
     MOVZX RAX, R10B
     MOVZX RBX, R11B
     SUB RAX, RBX
+    RET
+
+
+; RDI : s1
+; RSI : s2
+strcasecmp:
+    ENTER 0, 0
+    MOV DIL, BYTE [RDI]
+    CALL upcase_to_lowcase
+    MOV R10B, AL
+    LEAVE
+
+    ENTER 0, 0
+    MOV DIL, BYTE [RSI]
+    CALL upcase_to_lowcase
+    MOV R11B, AL
+    LEAVE
+
+    CMP R10B, R11B
+    JNE strcasecmp_return
+    CMP R10B, 0
+    JE strcasecmp_return
+    INC RDI
+    INC RSI
+    JMP my_strcasecmp
+strcasecmp_return:
+    MOVZX RAX, R10B
+    MOVZX RBX, R11B
+    SUB RAX, RBX
+    RET
+
+; RDI : character
+upcase_to_lowcase:
+    CMP DIL, 'A'
+    JL upcase_to_lowcase_return
+    CMP DIL, 'Z'
+    JG upcase_to_lowcase_return
+    ADD DIL, 32
+upcase_to_lowcase_return:
+    XOR EAX, EAX
+    MOV AL, DIL
     RET
