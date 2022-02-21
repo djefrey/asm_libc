@@ -9,6 +9,7 @@ GLOBAL strcmp
 GLOBAL strncmp
 GLOBAL strcasecmp
 GLOBAL strstr
+GLOBAL strpbrk
 
 ; RDI : string
 strlen:
@@ -189,5 +190,36 @@ strstr_no_match:
     RET
 
 strstr_match:
+    MOV RAX, RDI
+    RET
+
+; RDI : str
+; RSI : chars
+strpbrk:
+strpbrk_find_match:
+    XOR RCX, RCX
+    MOV R10B, BYTE [RDI]
+    CMP R10B, 0
+    JE strpbrk_no_match
+
+strpbrk_find_match_loop:
+    MOV R11B, BYTE [RSI + RCX]
+
+    CMP R11B, 0
+    JE strpbrk_find_match_end
+    CMP R10B, R11B
+    JE strpbrk_match
+    INC RCX
+    JMP strpbrk_find_match_loop
+
+strpbrk_find_match_end:
+    INC RDI
+    JMP strpbrk_find_match
+
+strpbrk_no_match:
+    XOR RAX, RAX
+    RET
+
+strpbrk_match:
     MOV RAX, RDI
     RET
