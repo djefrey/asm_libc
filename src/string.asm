@@ -10,6 +10,7 @@ GLOBAL strncmp
 GLOBAL strcasecmp
 GLOBAL strstr
 GLOBAL strpbrk
+GLOBAL strcspn
 
 ; RDI : string
 strlen:
@@ -222,4 +223,31 @@ strpbrk_no_match:
 
 strpbrk_match:
     MOV RAX, RDI
+    RET
+
+; RDI : str
+; RSI : accept
+strcspn:
+    XOR RAX, RAX
+
+strcspn_loop:
+    XOR RCX, RCX
+    MOV R10B, [RDI + RAX]
+    CMP R10B, 0
+    JE strcspn_return
+
+strcspn_check_valid:
+    MOV R11B, [RSI + RCX]
+    CMP R11B, 0
+    JE strcspn_return
+    CMP R10B, R11B
+    JE strcspn_loop_end
+    INC RCX
+    JMP strcspn_check_valid
+
+strcspn_loop_end:
+    INC RAX
+    JMP strcspn_loop
+
+strcspn_return:
     RET
