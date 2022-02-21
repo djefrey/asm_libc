@@ -89,7 +89,7 @@ strcmp:
     JE strcmp_return
     INC RDI
     INC RSI
-    JMP my_strcmp
+    JMP strcmp
 strcmp_return:
     MOVZX RAX, R10B
     MOVZX RBX, R11B
@@ -122,39 +122,34 @@ strncmp_return:
 ; RDI : s1
 ; RSI : s2
 strcasecmp:
-    ENTER 0, 0
-    MOV DIL, BYTE [RDI]
-    CALL upcase_to_lowcase
-    MOV R10B, AL
-    LEAVE
+    MOV R10B, BYTE [RDI]
+    MOV R11B, BYTE [RSI]
 
-    ENTER 0, 0
-    MOV DIL, BYTE [RSI]
-    CALL upcase_to_lowcase
-    MOV R11B, AL
-    LEAVE
+strcasecmp_upcase1:
+    CMP R10B, 'A'
+    JL strcasecmp_upcase2
+    CMP R10B, 'Z'
+    JG strcasecmp_upcase2
+    ADD R10B, 32
 
+strcasecmp_upcase2:
+    CMP R11B, 'A'
+    JL strcasecmp_cmp
+    CMP R11B, 'Z'
+    JG strcasecmp_cmp
+    ADD R11B, 32
+
+strcasecmp_cmp:
     CMP R10B, R11B
     JNE strcasecmp_return
     CMP R10B, 0
     JE strcasecmp_return
     INC RDI
     INC RSI
-    JMP my_strcasecmp
+    JMP strcasecmp
+
 strcasecmp_return:
     MOVZX RAX, R10B
     MOVZX RBX, R11B
     SUB RAX, RBX
-    RET
-
-; RDI : character
-upcase_to_lowcase:
-    CMP DIL, 'A'
-    JL upcase_to_lowcase_return
-    CMP DIL, 'Z'
-    JG upcase_to_lowcase_return
-    ADD DIL, 32
-upcase_to_lowcase_return:
-    XOR EAX, EAX
-    MOV AL, DIL
     RET
