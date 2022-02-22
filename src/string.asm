@@ -104,6 +104,8 @@ strcmp_return:
 ; RDX : n
 strncmp:
     XOR RCX, RCX
+    CMP RDX, 0
+    JE strncmp_err
 strncmp_loop:
     CMP RCX, RDX
     JE strncmp_return
@@ -119,6 +121,9 @@ strncmp_return:
     MOVZX RAX, R10B
     MOVZX RBX, R11B
     SUB RAX, RBX
+    RET
+strncmp_err:
+    MOV RAX, 0
     RET
 
 
