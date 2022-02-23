@@ -64,6 +64,9 @@ strrchr:
     JE strrchr_null
 
     MOV RCX, RAX
+
+    CMP SIL, 0
+    JE strrchr_return
 strrchr_count:
     DEC RCX
     CMP BYTE [RDI + RCX], SIL   ; char == c
