@@ -172,7 +172,7 @@ strstr:
 
 strstr_loop:
     CMP BYTE [RDI], 0
-    JE strstr_no_match
+    JE strstr_empty_needle
 
 strstr_find_match:
     XOR RCX, RCX
@@ -185,7 +185,7 @@ strstr_find_match_loop:
     CMP R11B, 0
     JE strstr_match
     CMP R10B, 0
-    JE strstr_end_loop
+    JE strstr_no_match
     CMP R10B, R11B
     JE strstr_find_match_loop
     JMP strstr_end_loop
@@ -194,8 +194,12 @@ strstr_end_loop:
     INC RDI
     JMP strstr_loop
 
-strstr_no_match:
+strstr_empty_needle:
     MOV RAX, R9
+    RET
+
+strstr_no_match:
+    MOV RAX, 0
     RET
 
 strstr_match:
