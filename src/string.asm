@@ -238,7 +238,7 @@ strpbrk_match:
     RET
 
 ; RDI : str
-; RSI : accept
+; RSI : reject
 strcspn:
     XOR RAX, RAX
 
@@ -251,9 +251,9 @@ strcspn_loop:
 strcspn_check_valid:
     MOV R11B, [RSI + RCX]
     CMP R11B, 0
-    JE strcspn_return
-    CMP R10B, R11B
     JE strcspn_loop_end
+    CMP R10B, R11B
+    JE strcspn_return
     INC RCX
     JMP strcspn_check_valid
 
